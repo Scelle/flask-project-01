@@ -11,7 +11,12 @@ service:
   nodePort: 30001
 
 ingress:
+  enabled: true
   host: my-flask-app.local
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  path: /
+  pathType: Prefix
 
 env:
   FLASK_ENV: "production"

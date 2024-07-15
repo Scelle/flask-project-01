@@ -1,9 +1,11 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-deployment
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}
 spec:
-  replicas: 2
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       app: {{ .Release.Name }}
@@ -14,12 +16,15 @@ spec:
     spec:
       containers:
       - name: {{ .Release.Name }}
-        image: scelle/my-flask-app:latest
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
         - containerPort: 5000
-        envFrom:
-        - configMapRef:
-            name: {{ .Release.Name }}-config
-        - secretRef:
-            name: {{ .Release.Name }}-secret
+        env:
+        - name: FLASK_ENV
+          value: {{ .Values.env.FLASK_ENV }}
+        - name: DATABASE_URL
+          value: {{ .Values.env.DATABASE_URL }}
+        - name: SECRET_KEY
+          value: {{ .Values.secretKey }}
 
